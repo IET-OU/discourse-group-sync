@@ -7,37 +7,15 @@ enabled_site_setting :group_sync_enabled
 
 module ::GroupSync
   def self.sync_users(users)
-    group_mapping = {
-      "exec" => ["status_code[1003]"],
-      "it_team" => ["status_code[4002]"],
-      "q_proj" => ["status_code[3010]", "status_code[3009]", "status_code[3011]"],
-      "t_proj" => ["status_code[3006]"],
-      "duty_managers" => ["status_code[3005]"],
-      "t_dm" => ["status_code[3003]"],
-      "editors" => ["status_code[4004]"],
-      "tech_team" => ["status_code[4001]"]
-    }
-
-    crew = ["status_code[3002]", "status_code[3001]", 
-            "status_code[1004]", "status_code[1002]"]
-    group_mapping.each do |group, field|
-      crew.append(field)
-    end
-    group_mapping["crew"] = crew
-
     users.each do |user|
-      group_mapping.each do |group_name, custom_fields|
-        group = Group.find_by_name(group_name)
-
+      groups = Group.findAll()
+      groups.each do |group|
         unless group.nil?
           group_inclusion = false
-
-          custom_fields.each do |custom_field|
-            if user.custom_fields[custom_field] == "true"
+            if user.cohort == group.
               group_inclusion = true
               break
             end
-          end
 
           if group_inclusion && !user.groups.include?(group)
             group.add(user)
